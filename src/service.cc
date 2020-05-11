@@ -403,7 +403,7 @@ NAN_METHOD(SetState) {
 			return;
 		}
 
-		DWORD new_state = info[0]->Uint32Value();
+		DWORD new_state = Nan::To<uint32_t>(info[0]).FromJust();
 		set_status(new_state, NO_ERROR, 0);
 	}
 
@@ -430,7 +430,7 @@ NAN_METHOD(SetControlsAccepted) {
 			return;
 		}
 
-		controls_accepted = info[0]->Uint32Value();
+		controls_accepted = Nan::To<uint32_t>(info[0]).FromJust();
 		set_status(SERVICE_RUNNING, NO_ERROR, 0);
 	}
 

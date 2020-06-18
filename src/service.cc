@@ -165,7 +165,7 @@ DWORD __stdcall run_thread (LPVOID param) {
 
 namespace service {
 
-void InitAll (Handle<Object> exports) {
+void InitAll (Local<Object> exports) {
 	pthread_mutex_init(&status_handle_mtx, NULL);
 	pthread_mutex_init(&stop_requested_mtx, NULL);
 	pthread_mutex_init(&stop_service_mtx, NULL);
@@ -173,29 +173,14 @@ void InitAll (Handle<Object> exports) {
 
 	pthread_cond_init(&stop_service, NULL);
 
-	exports->Set(Nan::New("add").ToLocalChecked(),
-			Nan::GetFunction(Nan::New<FunctionTemplate>(Add)).ToLocalChecked());
-
-	exports->Set(Nan::New("isStopRequested").ToLocalChecked(),
-			Nan::GetFunction(Nan::New<FunctionTemplate>(IsStopRequested)).ToLocalChecked());
-	
-	exports->Set(Nan::New("remove").ToLocalChecked(),
-			Nan::GetFunction(Nan::New<FunctionTemplate>(Remove)).ToLocalChecked());
-	
-	exports->Set(Nan::New("run").ToLocalChecked(),
-			Nan::GetFunction(Nan::New<FunctionTemplate>(Run)).ToLocalChecked());
-	
-	exports->Set(Nan::New("stop").ToLocalChecked(),
-		Nan::GetFunction(Nan::New<FunctionTemplate>(Stop)).ToLocalChecked());
-
-	exports->Set(Nan::New("setState").ToLocalChecked(),
-		Nan::GetFunction(Nan::New<FunctionTemplate>(SetState)).ToLocalChecked());
-
-	exports->Set(Nan::New("getState").ToLocalChecked(),
-		Nan::GetFunction(Nan::New<FunctionTemplate>(GetState)).ToLocalChecked());
-
-	exports->Set(Nan::New("setControlsAccepted").ToLocalChecked(),
-		Nan::GetFunction(Nan::New<FunctionTemplate>(SetControlsAccepted)).ToLocalChecked());
+	Nan::Set(exports, Nan::New("add").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(Add)).ToLocalChecked());
+	Nan::Set(exports, Nan::New("isStopRequested").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(IsStopRequested)).ToLocalChecked());
+	Nan::Set(exports, Nan::New("remove").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(Remove)).ToLocalChecked());
+	Nan::Set(exports, Nan::New("run").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(Run)).ToLocalChecked());
+	Nan::Set(exports, Nan::New("stop").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(Stop)).ToLocalChecked());
+	Nan::Set(exports, Nan::New("setState").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(SetState)).ToLocalChecked());
+	Nan::Set(exports, Nan::New("getState").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(GetState)).ToLocalChecked());
+	Nan::Set(exports, Nan::New("setControlsAccepted").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(SetControlsAccepted)).ToLocalChecked());
 }
 
 NODE_MODULE(service, InitAll)
@@ -418,7 +403,7 @@ NAN_METHOD(SetState) {
 			return;
 		}
 
-		DWORD new_state = info[0]->Uint32Value();
+		DWORD new_state = Nan::To<uint32_t>(info[0]).FromJust();
 		set_status(new_state, NO_ERROR, 0);
 	}
 
@@ -445,7 +430,7 @@ NAN_METHOD(SetControlsAccepted) {
 			return;
 		}
 
-		controls_accepted = info[0]->Uint32Value();
+		controls_accepted = Nan::To<uint32_t>(info[0]).FromJust();
 		set_status(SERVICE_RUNNING, NO_ERROR, 0);
 	}
 
